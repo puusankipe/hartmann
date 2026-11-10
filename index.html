@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fi"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Hartmann | Tuotechecklist</title><style>
+:root{font-family:Inter,Segoe UI,Arial,sans-serif;color:#eaf0f8;background:#0d1423;font-size:15px}*{box-sizing:border-box}body{margin:0}button,input,select,textarea{font:inherit}button{cursor:pointer;border-radius:9px;border:1px solid #354967;background:#172841;color:#eaf0f8;padding:10px 14px}button:hover{background:#263e5c}button.primary{background:#3874f2;border-color:#3874f2}button.danger{background:#522731;border-color:#86414a}button:disabled{opacity:.45;cursor:not-allowed}input,select,textarea{background:#111f32;color:#f0f5fc;border:1px solid #3e5572;border-radius:8px;padding:10px;min-width:0}input:focus,textarea:focus,select:focus{outline:2px solid #568aff}input[type=checkbox]{accent-color:#65c39b;width:20px;height:20px;cursor:pointer}header{padding:20px max(20px,calc((100vw - 1160px)/2));background:#121f32;border-bottom:1px solid #2c405c;display:flex;align-items:center;justify-content:space-between;gap:12px}h1{font-size:23px;margin:0}h2{font-size:20px;margin:0 0 8px}small,.muted{color:#9aabc3}main{max-width:1160px;padding:22px 16px 50px;margin:auto}.bar,.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:end}.bar>label{display:grid;gap:6px;min-width:175px}.panel{background:#142238;border:1px solid #314560;border-radius:14px;padding:18px;margin:16px 0}.stats{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.meter{height:10px;background:#2a3a50;border-radius:20px;overflow:hidden;flex:1;min-width:120px}.meter>div{height:100%;background:#66c9a0;transition:width .2s}.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.item{background:#0e1a2c;border:1px solid #304158;border-radius:10px;padding:12px;display:flex;gap:10px;align-items:center;min-height:76px}.item.checked{border-color:#31745f;background:#122e2e}.item .detail{min-width:0;flex:1}.item .key{font-size:13px;color:#9eafc5;margin-bottom:5px}.item .value{font-size:17px;font-weight:650;overflow-wrap:anywhere}.item input.edit{width:100%;margin-top:5px}.item.checkonly{border-style:dashed}.pill{border:1px solid #577398;border-radius:99px;padding:6px 10px;font-size:12px;color:#c5d7ed}.topline{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.help{font-size:13px;color:#a4b6ce;line-height:1.5}.note{width:100%;resize:vertical;min-height:65px}.separator{height:1px;background:#314560;margin:16px 0}.labelInput{display:grid;gap:7px}.hide{display:none!important}@media(max-width:680px){.fields{grid-template-columns:1fr}header{padding:16px}h1{font-size:19px}main{padding:12px}.bar>label{flex:1;min-width:140px}.panel{padding:12px}}
+.photoBtn{font-size:12px;padding:7px 10px;white-space:nowrap;color:#d6e7ff;border-color:#416795;background:#1a3557}.photoBtn:hover{background:#315481}.detailHead{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}.photoModal{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;padding:18px}.photoModal.open{display:flex}.photoWindow{background:#142238;border:1px solid #50617c;padding:14px;border-radius:14px;max-width:min(96vw,1080px);max-height:96vh;overflow:auto;width:100%}.photoTop{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}.photoGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:12px}.photoGrid figure{margin:0}.photoGrid img{display:block;width:100%;max-height:75vh;object-fit:contain;border-radius:7px;background:#05080c}.photoGrid figcaption{font-size:12px;color:#b9c9d8;margin-top:5px}</style></head><body class=""><header><div><h1>Hartmann · Tuotechecklist</h1><small>16 tuotetta · HM1 / HM2 · Tuoteasetusten tarkistus</small></div></header><main>
+<section class="panel"><div class="bar"><label>Tuote (SKU)<select id="sku"></select></label><label>Kone<select id="machine"><option value="HM1">HM 1</option><option value="HM2">HM 2</option></select></label><label>Hakusana<input id="filter" placeholder="Hae asetusta"></label></div><div class="separator"></div><div class="topline"><h2 id="productTitle">Tuote 80820 · HM1</h2><span id="status" class="pill">Tarkistustila</span></div><div class="stats"><strong id="progress">0 / 26 tarkistettu</strong><div class="meter"><div id="fill" style="width:0%"></div></div><span id="percent">0 %</span></div><p class="help">Rastita tarkistetut asetukset. Rastit ja huomiot säilyvät tässä selaimessa. Tuoteasetukset luetaan GitHubissa julkaistusta products.json-tiedostosta.</p></section>
+<section class="panel"><div class="topline"><h2>Asetukset</h2><div class="actions"><button id="markAll">Rastita kaikki</button><button id="clearChecks">Tyhjennä rastit</button></div></div><div class="fields" id="fields"></div></section>
+<section class="panel"><label class="labelInput">Huomiot / poikkeamat<textarea id="notes" placeholder="Kirjaa havaitut poikkeamat..."></textarea></label></section>
+<section class="panel"><h2>Tietojen hallinta</h2><p id="loadStatus" class="help">Ladataan tuoteasetuksia...</p><div class="actions"><button id="export">Vie varmuuskopio (JSON)</button><button id="importBtn">Tuo varmuuskopio</button><input id="importFile" class="hide" type="file" accept="application/json,.json"></div><p class="help">Rastit ja huomiot tallentuvat vain tähän selaimeen. Tuotteiden ohjearvot tulevat kaikille yhteisestä products.json-tiedostosta. Tee tarvittaessa varmuuskopio rasteista.</p></section>
+</main><div id="photoModal" class="photoModal" role="dialog" aria-modal="true" aria-label="Asetuksen kuvat" aria-hidden="true"><div class="photoWindow"><div class="photoTop"><h2 id="photoTitle">Asetuksen kuvat</h2><button type="button" id="photoClose">Sulje ✕</button></div><div id="photoContent" class="photoGrid"></div></div></div><script>
+const FIELDS=[["1. kone (%)", "1. kone (%) (jos 100 %, yhden koneen tuote)"], ["Accum1", "Accum1"], ["Spreader", "Spreader"], ["Tuotteen leveys", "Tuotteen leveys"], ["Tuotteen pituus", "Tuotteen pituus"], ["Tassut / tuote mm", "Tassujen / tuotteen korkeus (mm)"], ["Terä mm", "Terän korkeus (mm)"], ["Painopöytä", "Painopöydän korkeus"], ["Guide 1", "Guide 1 (suurin)"], ["Guide 2", "Guide 2"], ["Guide 3", "Guide 3 (pienin)"], ["Kolat piikkejä", "Kolat (rakes), piikkejä"], ["Scoopit", "Scoopit (stretchers)"], ["Pussipöydän keskitys", "Pussipöydän keskitys"], ["Pussipöydän pituus", "Pussipöydän pituus"], ["Laser 1", "Laser HM 1"], ["Laser 2", "Laser HM 2"], ["Nopeus", "Ajonopeus"], ["Resepti", "Resepti"], ["Pussin leveys", "Pussin leveys"], ["Foil", "Foil"], ["Scoop lisäohjurit", "Scooppien lisäohjurit"], ["HM2 scoop korkeus", "Scooppien korkeus"], ["Scoop leveys", "Scoop leveys"], ["Esiaukaisu", "Esiaukaisu"], ["Levityspalat", "Levityspalat"], ["Pussi SKU (CM)", "Pussi SKU (CM)"], ["__inkjet_ok", "Mustesuihkun koodi OK?"], ["__kwiklok_ok", "Kwik Lok -kirjoittimen koodi OK?"]];
+
+const $=id=>document.getElementById(id);
+const PHOTO_MAP={"Kolat piikkejä": ["kuva 4 vai 6 piikkiä.jpg", "kuva 4 vai 6 piikkiä (2).jpg"], "Accum1": ["20261028_195615.jpg"], "Spreader": ["20261028_195615.jpg"], "Tassut / tuote mm": ["20261028_195749.jpg"], "Terä mm": ["20261028_195720.jpg"], "Painopöytä": ["20261028_195714.jpg", "leikkurin korkeus hotdog tuotteet.jpg"], "Tuotteen pituus": ["20261028_195743.jpg"], "Laser 1": ["laserin kuva1.jpg", "laserin kuva2.jpg"], "Laser 2": ["laserin kuva1.jpg", "laserin kuva2.jpg"], "Foil": ["foilin tyyppi.jpg"], "Nopeus": ["resepti JA ajonopeus.jpg"], "Resepti": ["resepti JA ajonopeus.jpg"], "Levityspalat": ["korkeat levityspalat.jpg", "matalat levityspalat.jpg"], "Scoopit": ["scoopin kuva.jpg"], "Scoop leveys": ["scoop leveys.jpg"], "HM2 scoop korkeus": ["scoop korkeus.jpg"], "Scoop lisäohjurit": ["20240403_155616.jpg"], "__kwiklok_ok": ["20240311_131612.jpg"], "Pussi SKU (CM)": ["pussi_CM_etiketti.jpg"], "Pussipöydän keskitys": ["pussipoydan_keskitys.png"], "Pussipöydän pituus": ["pussipoydan_pituus.png"]};
+function photoList(k,p){
+ if(k==='Kolat piikkejä'){
+  const m=String(p?.[k]??'').match(/(?:^|\D)([46])(?:\D|$)/);
+  if(m?.[1]==='4')return ['kuva 4 piikkiä.jpg'];
+  if(m?.[1]==='6')return ['kuva 4 vai 6 piikkiä.jpg','kuva 4 vai 6 piikkiä (2).jpg'];
+ }
+ return PHOTO_MAP[k]||[];
+}
+function showPhotos(label,files){
+ $('photoTitle').textContent=label;
+ const box=$('photoContent');box.replaceChildren();
+ for(const name of files){
+  const fig=document.createElement('figure'),im=document.createElement('img'),cap=document.createElement('figcaption');
+  im.src='./kuvat/'+encodeURIComponent(name);
+  im.alt=label+' – '+name;im.loading='lazy';
+  cap.textContent=name;
+  fig.append(im,cap);box.append(fig);
+ }
+ $('photoModal').classList.add('open');
+ $('photoModal').setAttribute('aria-hidden','false');
+ $('photoClose').focus();
+}
+function closePhotos(){
+ $('photoModal').classList.remove('open');
+ $('photoModal').setAttribute('aria-hidden','true');
+}
+function addPhotoButton(detail,k,label,p){
+ const files=photoList(k,p);if(!files.length)return;
+ const btn=document.createElement('button');btn.type='button';btn.className='photoBtn';
+ btn.textContent='🖼 Katso kuva';btn.onclick=()=>showPhotos(label,files);
+ detail.append(btn);
+}
+$('photoClose').onclick=closePhotos;
+$('photoModal').onclick=e=>{if(e.target===$('photoModal'))closePhotos()};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closePhotos()});
+
+const STORAGE_KEY='hartmann-checklist-v3';
+
+let products=[];
+function loadLocal(){
+ try { const x=JSON.parse(localStorage.getItem(STORAGE_KEY)); if(x && typeof x==='object') return {checks:x.checks||{},notes:x.notes||{}}; }
+ catch(e){}
+ return {checks:{},notes:{}};
+}
+let state=loadLocal();
+const slug=()=>$('sku').value+'|'+$('machine').value;
+const prod=()=>products.find(x=>String(x.SKU)===$('sku').value);
+function save(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}catch(e){console.warn('Paikallinen tallennus epäonnistui',e)}}
+function valueFor(p,k){
+ const v=String(p[k]??'');
+ if(['Accum1','Spreader'].includes(k)){
+  const m=$('machine').value;
+  const match=v.match(new RegExp(m+'\\s*:\\s*([^/]+)','i'));
+  return match?match[1].trim():(v.includes('HM1:')||v.includes('HM2:')?'':v);
+ }
+ return v;
+}
+function visibleFields(p){
+ const q=$('filter').value.toLocaleLowerCase('fi');
+ return FIELDS.filter(([k,label])=>{
+  if(k==='Laser 1' && $('machine').value!=='HM1')return false;
+  if(k==='Laser 2' && $('machine').value!=='HM2')return false;
+  return (k+' '+label+' '+valueFor(p,k)).toLocaleLowerCase('fi').includes(q);
+ });
+}
+function render(){
+ const p=prod();
+ if(!p)return;
+ const ck=state.checks[slug()]||{};
+ $('productTitle').textContent='Tuote '+p.SKU+' · '+$('machine').value;
+ $('fields').replaceChildren();
+ const shown=visibleFields(p);
+ let count=0;
+ for(const [k,label] of shown){
+  const item=document.createElement('div'); item.className='item'+(ck[k]?' checked':'');
+  const cb=document.createElement('input'); cb.type='checkbox'; cb.checked=!!ck[k];
+  cb.setAttribute('aria-label','Tarkistettu: '+label);
+  cb.onchange=()=>{(state.checks[slug()]??={})[k]=cb.checked; save(); render()};
+  const detail=document.createElement('div'); detail.className='detail';
+  const key=document.createElement('div'); key.className='key'; key.textContent=label;
+  detail.append(key);addPhotoButton(detail,k,label,p);
+  if(k.startsWith('__'))item.classList.add('checkonly');
+  else {const val=document.createElement('div'); val.className='value'; val.textContent=valueFor(p,k)||'Ei määritelty'; detail.append(val)}
+  item.append(cb,detail); $('fields').append(item);
+  if(ck[k])count++;
+ }
+ $('progress').textContent=count+' / '+shown.length+' tarkistettu';
+ const pc=shown.length?Math.round(count/shown.length*100):0;
+ $('fill').style.width=pc+'%'; $('percent').textContent=pc+' %';
+ $('notes').value=state.notes[slug()]||'';
+}
+async function loadProducts(){
+ const response=await fetch('./products.json?v='+Date.now(),{cache:'no-store'});
+ if(!response.ok)throw Error('products.json: HTTP '+response.status);
+ const data=await response.json();
+ if(!Array.isArray(data)||!data.length||data.some(p=>!p||typeof p!=='object'||typeof p.SKU!=='string'))
+  throw Error('products.json ei sisällä kelvollista tuoteluetteloa');
+ const seen=new Set();
+ for(const p of data){if(seen.has(p.SKU))throw Error('Päällekkäinen SKU: '+p.SKU);seen.add(p.SKU)}
+ products=data;
+ const oldSku=$('sku').value;
+ $('sku').replaceChildren();
+ for(const p of products){const option=document.createElement('option'); option.value=p.SKU;option.textContent=p.SKU;$('sku').append(option)}
+ if(products.some(p=>p.SKU===oldSku))$('sku').value=oldSku;
+ $('loadStatus').textContent='Tuoteasetukset: products.json ('+products.length+' tuotetta)';
+ render();
+}
+function downloadBackup(){
+ const blob=new Blob([JSON.stringify({version:4,exported:new Date().toISOString(),checks:state.checks,notes:state.notes},null,2)],{type:'application/json'});
+ const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download='hartmann-tarkistukset-varmuuskopio.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1500);
+}
+function init(){
+ $('sku').onchange=render;
+ $('machine').onchange=render;
+ $('filter').oninput=render;
+ $('notes').oninput=()=>{state.notes[slug()]=$('notes').value;save()};
+ $('markAll').onclick=()=>{const p=prod();if(!p)return;const c=state.checks[slug()]??={};for(const [k] of visibleFields(p))c[k]=true;save();render()};
+ $('clearChecks').onclick=()=>{if(!confirm('Tyhjennetäänkö tämän tuotteen ja koneen kaikki rastit?'))return;state.checks[slug()]={};save();render()};
+ $('export').onclick=downloadBackup;
+ $('importBtn').onclick=()=>$('importFile').click();
+ $('importFile').onchange=async e=>{
+  try{
+   const f=e.target.files[0];if(!f)return;
+   const incoming=JSON.parse(await f.text());
+   if(!incoming.checks||typeof incoming.checks!=='object'||!incoming.notes||typeof incoming.notes!=='object')throw Error('Virheellinen varmuuskopio');
+   if(!confirm('Korvataanko tämän selaimen rastit ja huomiot varmuuskopiolla?'))return;
+   state={checks:incoming.checks,notes:incoming.notes};save();render();
+  }catch(err){alert('Tuonti epäonnistui: '+err.message)}finally{e.target.value=''}
+ };
+ loadProducts().catch(err=>{
+  $('loadStatus').textContent='Tuoteasetusten lataus epäonnistui: '+err.message;
+  $('loadStatus').style.color='#ffb4b4';
+  $('productTitle').textContent='Tuoteasetuksia ei voitu ladata';
+  $('fields').textContent='Tarkista, että index.html ja products.json ovat samassa GitHub-repositoryn kansiossa ja Pages-julkaisu on valmis.';
+  console.error(err);
+ });
+}
+init();
+</script></body></html>
